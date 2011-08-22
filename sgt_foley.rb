@@ -50,10 +50,9 @@ FOLEY_LINES = ["Ramirez! use your smoke grenades!",
                "Ramirez, let's go!",
                "Ramirez! Do Everything!"]
 
-
-
 client = Twitter::Client.new
 search = Twitter::Search.new
+
 search.containing("Ramirez").not_from("foleybot").since_id(highestcount).each do |r|
   random_line = FOLEY_LINES.sort_by {rand}.first
   string = "@#{r.from_user} #{random_line}"
