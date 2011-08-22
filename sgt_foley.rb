@@ -12,7 +12,7 @@ config = YAML.parse(File.read(PATH_PREFIX + "/creds.yml"))
   Object.const_set(key.upcase, config["config"][key].value)
 end
 
-highestcount = File.read(PATH_PREFIX + "/highest")
+highestcount = File.read(PATH_PREFIX + "/highest").to_i
 
 Twitter.configure do |config|
   config.consumer_key = CONSUMER_KEY
@@ -56,8 +56,11 @@ client = Twitter::Client.new
 search = Twitter::Search.new
 search.containing("Ramirez").not_from("foleybot").since_id(highestcount).each do |r|
   random_line = FOLEY_LINES.sort_by {rand}.first
-  p r
   string = "@#{r.from_user} #{random_line}"
   client.update(string, :in_reply_to_status_id => r.id)
-  File.open(PATH_PREFIX + "/highest", "w") {|f| f.write(r.id)}
+  if r.id.to_i > highestcount
+    highestcount = r.id.to_i
+  end
 end
+
+File.open(PATH_PREFIX + "/highest", "w") {|f| f.write(highestcount.to_s)}
